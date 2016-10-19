@@ -1,0 +1,31 @@
+endpoint "/users" {
+  method = "GET"
+
+  response {
+    headers {
+      X-MY-HEADER = "stuff"
+    }
+
+    code = 300
+
+    body = "hello world"
+  }
+}
+
+endpoint "/users" {
+  method = "POST"
+
+  request {
+    body = <<-EOF
+    {
+      "test": "value"
+    }
+    EOF
+  }
+
+  response {
+    code = 201
+
+    body = "hello, world"
+  }
+}
