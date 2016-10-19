@@ -74,6 +74,6 @@ func test(host string) {
 			result = color.RedString("Fail %s", body.String())
 		}
 
-		fmt.Printf("ENDPOINT: [%s] %s | %s %s\n", color.YellowString(ep.Method), color.BlueString(ep.URI), res.Status, result)
+		fmt.Printf("\tENDPOINT: [%s] %s | %s %s\n", color.YellowString(ep.Method), color.BlueString(ep.URI), res.Status, result)
 	})
 }
