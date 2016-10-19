@@ -133,7 +133,6 @@ func (t *Tree) Load(s getter.Storage) error {
 		path := make([]string, len(t.path), len(t.path)+1)
 		copy(path, t.path)
 		path = append(path, m.Name)
-		fmt.Println("Path:", path)
 
 		// Split out the subdir if we have one
 		source, subDir := getter.SourceDirSubdir(m.Source)
