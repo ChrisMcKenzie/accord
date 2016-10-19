@@ -35,13 +35,11 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $CWD/.accord)")
 }
 
 // initConfig reads in config file and ENV variables if set.
-func initConfig() {
+func initConfig(cmd *cobra.Command, args []string) {
 	if cfgFile == "" { // enable ability to specify config file via flag
 		cfgFile = "accord.hcl"
 	}

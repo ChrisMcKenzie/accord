@@ -16,9 +16,10 @@ var client *http.Client
 
 // testCmd represents the plan command
 var testCmd = &cobra.Command{
-	Use:   "test URL",
-	Short: "test accord against server",
-	Long:  ``,
+	Use:    "test URL",
+	Short:  "test accord against server",
+	Long:   ``,
+	PreRun: initConfig,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) <= 0 {
 			color.Red("A server URL is required.")

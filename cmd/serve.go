@@ -21,6 +21,7 @@ var serveCmd = &cobra.Command{
 		generates a stub server based on the accord given for use by 
 		consumers for development.
 	`,
+	PreRun: initConfig,
 	Run: func(cmd *cobra.Command, args []string) {
 		color.Blue("Loaded the following endpoints from %s\n\n", cfgFile)
 
