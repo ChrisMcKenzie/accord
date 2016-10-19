@@ -3,13 +3,15 @@ package accord
 import (
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 
+	getter "github.com/hashicorp/go-getter"
 	"github.com/hashicorp/hcl"
 	"github.com/hashicorp/hcl/hcl/ast"
 )
 
-// Load ...
-func Load(root string) (*Accord, error) {
+// LoadConfig ...
+func LoadConfig(root string) (*Config, error) {
 	data, err := readFile(root)
 	if err != nil {
 		return nil, err
@@ -25,14 +27,14 @@ func Load(root string) (*Accord, error) {
 	return acc, err
 }
 
-func parse(f *ast.File) (*Accord, error) {
+func parse(f *ast.File) (*Config, error) {
 	// Top-level item should be the object list
 	list, ok := f.Node.(*ast.ObjectList)
 	if !ok {
 		return nil, fmt.Errorf("error parsing: file does not contain root node object")
 	}
 
-	acc := new(Accord)
+	acc := new(Config)
 
 	if endpoints := list.Filter("endpoint"); len(endpoints.Items) > 0 {
 		var err error
@@ -42,7 +44,50 @@ func parse(f *ast.File) (*Accord, error) {
 		}
 	}
 
+	if modules := list.Filter("accord"); len(modules.Items) > 0 {
+		var err error
+		acc.Modules, err = loadModules(modules)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return acc, nil
+}
+
+func loadModules(list *ast.ObjectList) ([]*Module, error) {
+	list = list.Children()
+	if len(list.Items) == 0 {
+		return nil, nil
+	}
+
+	var result []*Module
+
+	for _, item := range list.Items {
+		k := item.Keys[0].Token.Value().(string)
+
+		var listVal *ast.ObjectList
+		if ot, ok := item.Val.(*ast.ObjectType); ok {
+			listVal = ot.List
+		} else {
+			return nil, fmt.Errorf("accord '%s': should be an object", k)
+		}
+
+		var source string
+		if o := listVal.Filter("source"); len(o.Items) > 0 {
+			err := hcl.DecodeObject(&source, o.Items[0].Val)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"Error parsing source for %s: %s",
+					k,
+					err)
+			}
+		}
+
+		result = append(result, &Module{k, source})
+	}
+
+	return result, nil
 }
 
 func loadEndpoints(list *ast.ObjectList) ([]*Endpoint, error) {
@@ -60,7 +105,7 @@ func loadEndpoints(list *ast.ObjectList) ([]*Endpoint, error) {
 		if ot, ok := item.Val.(*ast.ObjectType); ok {
 			listVal = ot.List
 		} else {
-			return nil, fmt.Errorf("module '%s': should be an object", uri)
+			return nil, fmt.Errorf("endpoint '%s': should be an object", uri)
 		}
 
 		var response *Response
@@ -114,4 +159,23 @@ func readFile(file string) (string, error) {
 	}
 
 	return string(data), nil
+}
+
+func getModule(m *Module) ([]*Endpoint, error) {
+	source, subDir := getter.SourceDirSubdir(m.Source)
+
+	source, err := getter.Detect(source, "./.accord", getter.Detectors)
+	if err != nil {
+		return nil, fmt.Errorf("module %s: %s", m.Name, err)
+	}
+
+	// Check if the detector introduced something new.
+	source, subDir2 := getter.SourceDirSubdir(source)
+	if subDir2 != "" {
+		subDir = filepath.Join(subDir2, subDir)
+	}
+
+	fmt.Println(source, subDir)
+
+	return nil, err
 }

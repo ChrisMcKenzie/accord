@@ -4,14 +4,19 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
-	accord "github.com/datascienceinc/accord/pkg"
+	"github.com/datascienceinc/accord/pkg/module"
+	getter "github.com/hashicorp/go-getter"
 	"github.com/spf13/cobra"
 )
 
+// DefaultDataDir is the default directory for storing local data
+const DefaultDataDir = ".accord"
+
 var cfgFile string
 
-var acc *accord.Accord
+var ctx *Context
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -32,22 +37,28 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports Persistent Flags, which, if defined here,
-	// will be global for your application.
-
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $CWD/.accord)")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	if cfgFile == "" { // enable ability to specify config file via flag
-		cfgFile = ".accord"
+		cfgFile = "accord.hcl"
 	}
 
-	var err error
-	acc, err = accord.Load(cfgFile)
+	tree, err := module.NewTreeModule("", cfgFile)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
+
+	err = tree.Load(&getter.FolderStorage{
+		StorageDir: filepath.Join(DefaultDataDir, "modules"),
+	})
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	ctx = NewContext(tree)
+
+	fmt.Println(ctx.Tree.Children())
 }

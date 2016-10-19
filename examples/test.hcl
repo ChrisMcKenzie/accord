@@ -1,16 +1,3 @@
-endpoint "/users" {
-  method = "GET"
-
-  response {
-    headers {
-      X-MY-HEADER = "stuff"
-    }
-
-    code = 300
-
-    body = "hello world"
-  }
-}
 
 endpoint "/users" {
   method = "POST"

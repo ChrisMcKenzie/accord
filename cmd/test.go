@@ -1,11 +1,8 @@
 package cmd
 
 import (
-	"bytes"
 	"fmt"
-	"io"
 	"net/http"
-	"strings"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -39,40 +36,40 @@ func server(host, uri string) string {
 }
 
 func test(host string) {
-	for _, ep := range acc.Endpoints {
-		var buf io.Reader
-		if ep.Request != nil && ep.Request.Body != "" {
-			buf = strings.NewReader(ep.Request.Body)
-		}
-		req, err := http.NewRequest(ep.Method, server(host, ep.URI), buf)
-		if err != nil {
-			color.Red("ERR: %s\n", err)
-			return
-		}
-
-		for header, value := range ep.Response.Headers {
-			req.Header.Add(header, value)
-		}
-
-		res, err := client.Do(req)
-		if err != nil {
-			color.Red("ERR: %s\n", err)
-			return
-		}
-
-		var body bytes.Buffer
-		defer res.Body.Close()
-		_, err = io.Copy(&body, res.Body)
-		if err != nil {
-			color.Red("ERR: %s\n", err)
-			return
-		}
-
-		result := color.GreenString("OK")
-		if body.String() != ep.Response.Body {
-			result = color.RedString("Fail %s", body.String())
-		}
-
-		fmt.Printf("ENDPOINT: [%s] %s | %s %s\n", color.YellowString(ep.Method), color.BlueString(ep.URI), res.Status, result)
-	}
+	// for _, ep := range config.Endpoints {
+	// 	var buf io.Reader
+	// 	if ep.Request != nil && ep.Request.Body != "" {
+	// 		buf = strings.NewReader(ep.Request.Body)
+	// 	}
+	// 	req, err := http.NewRequest(ep.Method, server(host, ep.URI), buf)
+	// 	if err != nil {
+	// 		color.Red("ERR: %s\n", err)
+	// 		return
+	// 	}
+	//
+	// 	for header, value := range ep.Response.Headers {
+	// 		req.Header.Add(header, value)
+	// 	}
+	//
+	// 	res, err := client.Do(req)
+	// 	if err != nil {
+	// 		color.Red("ERR: %s\n", err)
+	// 		return
+	// 	}
+	//
+	// 	var body bytes.Buffer
+	// 	defer res.Body.Close()
+	// 	_, err = io.Copy(&body, res.Body)
+	// 	if err != nil {
+	// 		color.Red("ERR: %s\n", err)
+	// 		return
+	// 	}
+	//
+	// 	result := color.GreenString("OK")
+	// 	if body.String() != ep.Response.Body {
+	// 		result = color.RedString("Fail %s", body.String())
+	// 	}
+	//
+	// 	fmt.Printf("ENDPOINT: [%s] %s | %s %s\n", color.YellowString(ep.Method), color.BlueString(ep.URI), res.Status, result)
+	// }
 }
