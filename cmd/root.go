@@ -59,6 +59,4 @@ func initConfig() {
 	}
 
 	ctx = NewContext(tree)
-
-	fmt.Println(ctx.Tree.Children())
 }

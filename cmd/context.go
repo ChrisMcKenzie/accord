@@ -17,9 +17,16 @@ func NewContext(tr *module.Tree) *Context {
 }
 
 func (c *Context) ProcessEndpoints(f func(*accord.Endpoint)) {
-	for name, child := range c.Tree.Children() {
-		for _, ep := range child.Config().Endpoints {
-			fmt.Printf("Module: %s -> %s\n", name, ep.URI)
-		}
+	c.processEndpoints(c.Tree, f)
+
+	for _, child := range c.Tree.Children() {
+		c.processEndpoints(child, f)
+	}
+}
+
+func (c *Context) processEndpoints(tr *module.Tree, f func(*accord.Endpoint)) {
+	for _, ep := range tr.Config().Endpoints {
+		fmt.Printf("Module %s:\n", tr.Name())
+		f(ep)
 	}
 }

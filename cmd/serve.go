@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -37,7 +38,8 @@ func serve() error {
 	router := mux.NewRouter()
 
 	ctx.ProcessEndpoints(func(ep *accord.Endpoint) {
-		return
+		fmt.Printf("\tENDPOINT: [%s] %s\n", color.YellowString(ep.Method), color.BlueString(ep.URI))
+		router.HandleFunc(ep.URI, newHandler(ep)).Methods(ep.Method)
 	})
 
 	srv := &http.Server{

@@ -128,7 +128,6 @@ func (t *Tree) Load(s getter.Storage) error {
 			return fmt.Errorf(
 				"module %s: duplicated. module names must be unique", m.Name)
 		}
-		fmt.Println(m)
 
 		// Determine the path to this child
 		path := make([]string, len(t.path), len(t.path)+1)
@@ -166,7 +165,6 @@ func (t *Tree) Load(s getter.Storage) error {
 			dir = filepath.Join(dir, subDir)
 		}
 
-		fmt.Println("DIR:", dir)
 		// Load the configurations.Dir(source)
 		children[m.Name], err = NewTreeModule(m.Name, dir)
 		if err != nil {
