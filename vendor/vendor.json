@@ -269,6 +269,12 @@
 			"revisionTime": "2016-06-21T17:42:43Z"
 		},
 		{
+			"checksumSHA1": "LuFv4/jlrmFNnDb/5SCSEPAM9vU=",
+			"path": "github.com/pmezard/go-difflib/difflib",
+			"revision": "792786c7400a136282c1664665ae0a8db921c6c2",
+			"revisionTime": "2016-01-10T10:55:54Z"
+		},
+		{
 			"checksumSHA1": "FZ0r4TzEy9UxXLkFVXFygApni4M=",
 			"path": "github.com/spf13/cobra",
 			"revision": "856b96dcb49d6427babe192998a35190a12c2230",
