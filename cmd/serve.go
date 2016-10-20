@@ -57,11 +57,9 @@ func serve() error {
 
 func newHandler(ep *accord.Endpoint) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		for header, value := range ep.Response.Headers {
-			w.Header().Add(header, value)
-		}
-
 		w.WriteHeader(ep.Response.Code)
-		w.Write([]byte(ep.Response.Body))
+
+		resp := parseBody(ep.Response.Headers, ep.Response.Body)
+		w.Write(resp.Bytes())
 	})
 }

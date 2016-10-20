@@ -1,13 +1,15 @@
 package accord
 
+import "net/http"
+
 // Response ...
 type Response struct {
-	Headers map[string]string `hcl:"headers"`
-	Code    int               `hcl:"code"`
-	Body    string            `hcl:"body"`
+	Headers http.Header
+	Code    int         `hcl:"code"`
+	Body    interface{} `hcl:"body"`
 }
 
 type Request struct {
-	Header map[string]string `hcl:"headers"`
-	Body   string            `hcl:"body"`
+	Headers http.Header
+	Body    interface{} `hcl:"body"`
 }

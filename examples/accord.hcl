@@ -9,10 +9,13 @@ endpoint "/users" {
   response {
     headers {
       X-MY-HEADER = "stuff"
+			Content-Type = "application/json"
     }
 
     code = 300
 
-    body = "hello world"
+    body {
+			message = "hello world"
+		}
   }
 }

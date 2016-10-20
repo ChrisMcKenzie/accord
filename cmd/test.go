@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 
 	accord "github.com/datascienceinc/accord/pkg"
 	"github.com/fatih/color"
+	"github.com/pmezard/go-difflib/difflib"
 	"github.com/spf13/cobra"
 )
 
@@ -42,18 +44,15 @@ func server(host, uri string) string {
 
 func test(host string) {
 	ctx.ProcessEndpoints(func(ep *accord.Endpoint) {
-		var buf io.Reader
-		if ep.Request != nil && ep.Request.Body != "" {
-			buf = strings.NewReader(ep.Request.Body)
+		var buf bytes.Buffer
+		if ep.Request != nil {
+			buf = parseBody(ep.Request.Headers, ep.Request.Body)
 		}
-		req, err := http.NewRequest(ep.Method, server(host, ep.URI), buf)
+
+		req, err := http.NewRequest(ep.Method, server(host, ep.URI), &buf)
 		if err != nil {
 			color.Red("ERR: %s\n", err)
 			return
-		}
-
-		for header, value := range ep.Response.Headers {
-			req.Header.Add(header, value)
 		}
 
 		res, err := client.Do(req)
@@ -62,19 +61,55 @@ func test(host string) {
 			return
 		}
 
-		var body bytes.Buffer
-		defer res.Body.Close()
-		_, err = io.Copy(&body, res.Body)
-		if err != nil {
-			color.Red("ERR: %s\n", err)
-			return
-		}
-
 		result := color.GreenString("OK")
-		if body.String() != ep.Response.Body {
-			result = color.RedString("Fail %s", body.String())
+		err = compareResponse(res, ep.Response)
+		if err != nil {
+			result = color.RedString("\nFAIL: \n%s\n", err.Error())
 		}
 
-		fmt.Printf("\tENDPOINT: [%s] %s | %s %s\n", color.YellowString(ep.Method), color.BlueString(ep.URI), res.Status, result)
+		fmt.Printf("\n- ENDPOINT: [%s] %s | %s %s\n", color.YellowString(ep.Method), color.BlueString(ep.URI), res.Status, result)
 	})
+}
+
+func compareResponse(resp *http.Response, expect *accord.Response) error {
+	var body bytes.Buffer
+	defer resp.Body.Close()
+	_, err := io.Copy(&body, resp.Body)
+	if err != nil {
+		color.Red("ERR: %s\n", err)
+		return err
+	}
+
+	respBody := parseBody(expect.Headers, expect.Body)
+	if body.String() != respBody.String() {
+		diff := difflib.ContextDiff{
+			A:        difflib.SplitLines(body.String()),
+			B:        difflib.SplitLines(respBody.String()),
+			FromFile: "Actual",
+			ToFile:   "Expectation",
+			Context:  3,
+			Eol:      "\n",
+		}
+		result, _ := difflib.GetContextDiffString(diff)
+		return fmt.Errorf(strings.Replace(result, "\t", " ", -1))
+	}
+
+	return nil
+}
+
+func parseBody(h http.Header, i interface{}) bytes.Buffer {
+	var buf bytes.Buffer
+	if i == nil {
+		i = ""
+	}
+
+	if _, ok := i.(string); h.Get("Content-Type") == "application/json" || !ok {
+		enc := json.NewEncoder(&buf)
+		enc.SetIndent("", "\t")
+		enc.Encode(i)
+	} else {
+		buf.WriteString(i.(string))
+	}
+
+	return buf
 }
