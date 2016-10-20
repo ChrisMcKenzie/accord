@@ -26,7 +26,7 @@ func (c *Context) ProcessEndpoints(f func(*accord.Endpoint)) {
 
 func (c *Context) processEndpoints(tr *module.Tree, f func(*accord.Endpoint)) {
 	for _, ep := range tr.Config().Endpoints {
-		fmt.Printf("Module %s:\n", tr.Name())
+		fmt.Printf("\n=== Module %s:\n", tr.Name())
 		f(ep)
 	}
 }

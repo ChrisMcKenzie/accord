@@ -27,7 +27,7 @@ var testCmd = &cobra.Command{
 			color.Red("A server URL is required.")
 			return
 		}
-		color.Blue("Loaded the following endpoints from %s\n\n", cfgFile)
+		color.Blue("Loaded the following endpoints from %s\n", cfgFile)
 
 		test(args[0])
 	},
