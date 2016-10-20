@@ -23,8 +23,7 @@ var serveCmd = &cobra.Command{
 	`,
 	PreRun: initConfig,
 	Run: func(cmd *cobra.Command, args []string) {
-		color.Blue("Loaded the following endpoints from %s\n\n", cfgFile)
-
+		color.Blue("Loaded the following endpoints from %s", cfgFile)
 		color.Red("ERR: %s\n", serve())
 	},
 }
@@ -39,7 +38,7 @@ func serve() error {
 	router := mux.NewRouter()
 
 	ctx.ProcessEndpoints(func(ep *accord.Endpoint) {
-		fmt.Printf("\tENDPOINT: [%s] %s\n", color.YellowString(ep.Method), color.BlueString(ep.URI))
+		fmt.Printf("\n- ENDPOINT: [%s] %s\n", color.YellowString(ep.Method), color.BlueString(ep.URI))
 		router.HandleFunc(ep.URI, newHandler(ep)).Methods(ep.Method)
 	})
 
@@ -57,11 +56,9 @@ func serve() error {
 
 func newHandler(ep *accord.Endpoint) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		for header, value := range ep.Response.Headers {
-			w.Header().Add(header, value)
-		}
-
 		w.WriteHeader(ep.Response.Code)
-		w.Write([]byte(ep.Response.Body))
+
+		resp := parseBody(ep.Response.Headers, ep.Response.Body)
+		w.Write(resp.Bytes())
 	})
 }

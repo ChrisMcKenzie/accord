@@ -3,6 +3,7 @@ package accord
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"path/filepath"
 
 	getter "github.com/hashicorp/go-getter"
@@ -110,7 +111,8 @@ func loadEndpoints(list *ast.ObjectList) ([]*Endpoint, error) {
 
 		var response *Response
 		if o := listVal.Filter("response"); len(o.Items) > 0 {
-			err := hcl.DecodeObject(&response, o.Items[0].Val)
+			var err error
+			response, err = loadResponse(o)
 			if err != nil {
 				return nil, fmt.Errorf(
 					"Error parsing response for %s: %s",
@@ -132,10 +134,11 @@ func loadEndpoints(list *ast.ObjectList) ([]*Endpoint, error) {
 
 		var request *Request
 		if o := listVal.Filter("request"); len(o.Items) > 0 {
-			err := hcl.DecodeObject(&request, o.Items[0].Val)
+			var err error
+			request, err = loadRequest(o)
 			if err != nil {
 				return nil, fmt.Errorf(
-					"Error parsing response for %s: %s",
+					"Error parsing request for %s: %s",
 					uri,
 					err)
 			}
@@ -147,6 +150,132 @@ func loadEndpoints(list *ast.ObjectList) ([]*Endpoint, error) {
 			Request:  request,
 			Response: response,
 		})
+	}
+
+	return result, nil
+}
+
+func loadResponse(list *ast.ObjectList) (*Response, error) {
+	var result *Response
+	item := list.Items[0]
+
+	var listVal *ast.ObjectList
+	if ot, ok := item.Val.(*ast.ObjectType); ok {
+		listVal = ot.List
+	} else {
+		return nil, fmt.Errorf("request: should be an object")
+	}
+
+	var code int
+	if o := listVal.Filter("code"); len(o.Items) > 0 {
+		err := hcl.DecodeObject(&code, o.Items[0].Val)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"Error parsing Response.Code for request: %s",
+				err)
+		}
+	}
+
+	var body interface{}
+	if o := listVal.Filter("body"); len(o.Items) > 0 {
+		err := hcl.DecodeObject(&body, o.Items[0].Val)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"Error parsing Response.Body for request: %s",
+				err)
+		}
+	}
+
+	var headers http.Header
+	if o := listVal.Filter("headers"); len(o.Items) > 0 {
+		var err error
+		headers, err = loadHeaders(o)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"Error parsing Response.Headers: %s",
+				err)
+		}
+	}
+
+	result = &Response{
+		Code:    code,
+		Body:    body,
+		Headers: headers,
+	}
+
+	return result, nil
+}
+
+func loadRequest(list *ast.ObjectList) (*Request, error) {
+	var result *Request
+
+	item := list.Items[0]
+
+	var listVal *ast.ObjectList
+	if ot, ok := item.Val.(*ast.ObjectType); ok {
+		listVal = ot.List
+	} else {
+		return nil, fmt.Errorf("request: should be an object")
+	}
+
+	var body interface{}
+	if o := listVal.Filter("body"); len(o.Items) > 0 {
+		err := hcl.DecodeObject(&body, o.Items[0].Val)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"Error parsing Request.Body for request: %s",
+				err)
+		}
+	}
+
+	headers := http.Header{}
+	if o := listVal.Filter("headers"); len(o.Items) > 0 {
+		var err error
+		headers, err = loadHeaders(o)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"Error parsing Request.Headers: %s",
+				err)
+		}
+	}
+
+	result = &Request{
+		Body:    body,
+		Headers: headers,
+	}
+
+	return result, nil
+}
+
+func loadHeaders(list *ast.ObjectList) (http.Header, error) {
+	list = list.Children()
+	if len(list.Items) == 0 {
+		return nil, nil
+	}
+
+	result := http.Header{}
+
+	item := list.Items[0]
+
+	var listVal *ast.ObjectList
+	if ot, ok := item.Val.(*ast.ObjectType); ok {
+		listVal = ot.List
+	} else {
+		return nil, fmt.Errorf("request: should be an object")
+	}
+
+	var rawHeaders map[string]string
+	if o := listVal.Filter("headers"); len(o.Items) > 0 {
+		err := hcl.DecodeObject(&rawHeaders, o.Items[0].Val)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"Error parsing Response.Code for request: %s",
+				err)
+		}
+	}
+
+	for k, val := range rawHeaders {
+		result.Set(k, val)
 	}
 
 	return result, nil
