@@ -9,6 +9,7 @@ type Response struct {
 	Body    interface{} `hcl:"body"`
 }
 
+// Request ...
 type Request struct {
 	Headers http.Header
 	Body    interface{} `hcl:"body"`
