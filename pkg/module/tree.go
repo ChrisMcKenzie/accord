@@ -12,9 +12,9 @@ import (
 	getter "github.com/hashicorp/go-getter"
 )
 
-const RootName = "root"
+const rootName = "root"
 
-// Tree ...
+// Tree is a struct containing a root config and all of the child modules.
 type Tree struct {
 	name     string
 	config   *accord.Config
@@ -87,7 +87,7 @@ func (t *Tree) Children() map[string]*Tree {
 // tree and then the module name given for any children.
 func (t *Tree) Name() string {
 	if t.name == "" {
-		return RootName
+		return rootName
 	}
 
 	return t.name
