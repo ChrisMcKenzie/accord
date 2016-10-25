@@ -51,3 +51,6 @@ accord "test-accord" {
   source = "github.com/datascienceinc/accord//examples/test.hcl"
 }
 ```
+
+You can create multiple `accord` definitions and they will all be pulled and merged
+in to a single suite for serving and testing.
