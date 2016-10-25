@@ -9,12 +9,13 @@ import (
 	"strings"
 
 	accord "github.com/datascienceinc/accord/pkg"
+	"github.com/datascienceinc/accord/pkg/httptest"
 	"github.com/fatih/color"
 	"github.com/pmezard/go-difflib/difflib"
 	"github.com/spf13/cobra"
 )
 
-var client *http.Client
+var client *httptest.Client
 
 // testCmd represents the plan command
 var testCmd = &cobra.Command{
@@ -35,7 +36,7 @@ var testCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(testCmd)
-	client = &http.Client{}
+	client = httptest.NewClient()
 }
 
 func server(host, uri string) string {
@@ -55,19 +56,18 @@ func test(host string) {
 			return
 		}
 
-		res, err := client.Do(req)
+		err = client.Evaluate(req, ep.Response)
 		if err != nil {
 			color.Red("ERR: %s\n", err)
 			return
 		}
 
 		result := color.GreenString("OK")
-		err = compareResponse(res, ep.Response)
 		if err != nil {
 			result = color.RedString("\nFAIL: \n%s\n", err.Error())
 		}
 
-		fmt.Printf("\n- ENDPOINT: [%s] %s | %s %s\n", color.YellowString(ep.Method), color.BlueString(ep.URI), res.Status, result)
+		fmt.Printf("\n- ENDPOINT: [%s] %s | %s\n", color.YellowString(ep.Method), color.BlueString(ep.URI), result)
 	})
 }
 
