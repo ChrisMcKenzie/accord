@@ -5,8 +5,7 @@ build:
     # Sets the go workspace and places you package
     # at the right place in the workspace tree
     - setup-go-workspace
-
-		# run go test but dont run vendored tests
+    # run go test but dont run vendored tests
     - script:
       name: go test
       code: |
