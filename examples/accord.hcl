@@ -15,7 +15,7 @@ endpoint "/users" {
     code = 300
 
     body = {
-			message = "hello world"
-		}
+      message = "hello world"
+    }
   }
 }
