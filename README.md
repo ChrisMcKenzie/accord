@@ -1,5 +1,7 @@
 # Accord
 
+[![wercker status](https://app.wercker.com/status/f81561778cc44e78f38610018441a61a/s/master "wercker status")](https://app.wercker.com/project/byKey/f81561778cc44e78f38610018441a61a)
+
 Accord is a super simple consumer contract testing and stubbing tool, that is 
 language agnostic.
 
