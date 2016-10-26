@@ -2,6 +2,7 @@ package httptest
 
 import (
 	"net/http"
+	"strconv"
 
 	accord "github.com/datascienceinc/accord/pkg"
 )
@@ -25,7 +26,7 @@ func (c *Client) Evaluate(req *http.Request, expected *accord.Response) error {
 
 	// first things first is the status code right?
 	if resp.StatusCode != expected.Code {
-		return diffError(string(expected.Code), string(resp.StatusCode))
+		return diffError("Status", strconv.Itoa(expected.Code), strconv.Itoa(resp.StatusCode))
 	}
 
 	// Lets go through all the headers in the expectation and make sure they match
@@ -33,7 +34,7 @@ func (c *Client) Evaluate(req *http.Request, expected *accord.Response) error {
 	// will send extra headers (ie. X-Powered-By)
 	for h := range expected.Headers {
 		if expected.Headers.Get(h) != resp.Header.Get(h) {
-			return diffError(expected.Headers.Get(h), resp.Header.Get(h))
+			return diffError("Header", expected.Headers.Get(h), resp.Header.Get(h))
 		}
 	}
 

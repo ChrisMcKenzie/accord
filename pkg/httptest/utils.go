@@ -13,12 +13,12 @@ import (
 	"github.com/pmezard/go-difflib/difflib"
 )
 
-func diffError(a string, b string) error {
+func diffError(typ, a, b string) error {
 	diff := difflib.ContextDiff{
 		A:        difflib.SplitLines(a),
 		B:        difflib.SplitLines(b),
-		FromFile: "Actual",
-		ToFile:   "Expectation",
+		FromFile: fmt.Sprintf("Actual %s", typ),
+		ToFile:   fmt.Sprintf("Expected %s", typ),
 		Context:  3,
 		Eol:      "\n",
 	}
