@@ -54,3 +54,21 @@ accord "test-accord" {
 
 You can create multiple `accord` definitions and they will all be pulled and merged
 in to a single suite for serving and testing.
+
+## Running A Stub Server
+
+Accord can be used to run a stub/mock server based on the endpoints in your 
+`accord.hcl`. This can be done by running the following.
+
+```
+accord serve
+Loaded the following endpoints from examples/accord.hcl
+
+Module root:
+        ENDPOINT: [GET] /users
+Module test-accord:
+        ENDPOINT: [POST] /users
+```
+
+this will start a web server listening on `localhost:7600` the port can be 
+changed by using the `-p` flag.
