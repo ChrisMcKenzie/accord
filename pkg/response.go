@@ -12,5 +12,6 @@ type Response struct {
 // Request ...
 type Request struct {
 	Headers http.Header
-	Body    interface{} `hcl:"body"`
+	Body    interface{}       `hcl:"body"`
+	Query   map[string]string `hcl:"query"`
 }
