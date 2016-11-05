@@ -14,8 +14,8 @@ func TestParseHandlesQueryParams(t *testing.T) {
         request {
 
             query {
-              hello   = "world"
-              goodbye = "moon"
+                hello   = "world"
+                goodbye = "moon"
             }
         }
     }
