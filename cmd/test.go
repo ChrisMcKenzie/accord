@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 
 	accord "github.com/datascienceinc/accord/pkg"
@@ -34,29 +35,50 @@ var testCmd = &cobra.Command{
 	},
 }
 
+type byteBufferReadCloser struct {
+	bytes.Buffer
+}
+
+func (b *byteBufferReadCloser) Close() error {
+	return nil
+}
+
 func init() {
 	RootCmd.AddCommand(testCmd)
 	client = httptest.NewClient()
 }
 
-func server(host, uri string) string {
-	return fmt.Sprintf("%s%s", host, uri)
+func server(host, uri string, query map[string]string) *url.URL {
+
+	url := url.URL{Host: host, Path: uri}
+	// if there are query parameters to add to the url
+	if len(query) != 0 {
+		// grab the query object
+		q := url.Query()
+		// loop over the endpoint query specifications
+		for k, v := range query {
+			// add the query to the url
+			q.Add(k, v)
+		}
+	}
+
+	return &url
 }
 
 func test(host string) {
 	ctx.ProcessEndpoints(func(ep *accord.Endpoint) {
-		var buf bytes.Buffer
+		var buf byteBufferReadCloser
 		if ep.Request != nil {
 			buf = parseBody(ep.Request.Headers, ep.Request.Body)
 		}
 
-		req, err := http.NewRequest(ep.Method, server(host, ep.URI), &buf)
-		if err != nil {
-			color.Red("ERR: %s\n", err)
-			return
+		req := &http.Request{
+			URL:    server(host, ep.URI, ep.Request.Query),
+			Method: ep.Method,
+			Body:   &buf,
 		}
 
-		err = client.Evaluate(req, ep.Response)
+		err := client.Evaluate(req, ep.Response)
 		if err != nil {
 			color.Red("ERR: %s\n", err)
 			return
@@ -97,8 +119,8 @@ func compareResponse(resp *http.Response, expect *accord.Response) error {
 	return nil
 }
 
-func parseBody(h http.Header, i interface{}) bytes.Buffer {
-	var buf bytes.Buffer
+func parseBody(h http.Header, i interface{}) byteBufferReadCloser {
+	var buf byteBufferReadCloser
 	if i == nil {
 		i = ""
 	}
