@@ -60,6 +60,8 @@ func server(host, uri string, query map[string]string) *url.URL {
 			// add the query to the url
 			q.Add(k, v)
 		}
+		// assign the query back to the url
+		url.RawQuery = q.Encode()
 	}
 
 	return &url
