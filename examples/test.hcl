@@ -8,6 +8,11 @@ endpoint "/users" {
       "test": "value"
     }
     EOF
+
+    query {
+      hello   = "world"
+      goodbye = "moon"
+    }
   }
 
   response {

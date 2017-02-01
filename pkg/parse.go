@@ -239,9 +239,20 @@ func loadRequest(list *ast.ObjectList) (*Request, error) {
 		}
 	}
 
+	var query map[string]string
+	if o := listVal.Filter("query"); len(o.Items) > 0 {
+		err := hcl.DecodeObject(&query, o.Items[0].Val)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"Error parsing query: %s",
+				err)
+		}
+	}
+
 	result = &Request{
 		Body:    body,
 		Headers: headers,
+		Query:   query,
 	}
 
 	return result, nil
