@@ -7,13 +7,13 @@ language agnostic.
 
 ## Getting Started
 
-Prebuilt binaries can be downloaded [here](https://github.com/datascienceinc/accord/releases/latest),
+Prebuilt binaries can be downloaded [here](https://github.com/ChrisMcKenzie/accord/releases/latest),
 however if you wish to build from source you will need `go 1.7+`
 
 ### Installing
 
 ```
-go get github.com/datascienceinc/accord
+go get github.com/ChrisMcKenzie/accord
 ```
 
 ### Writing a contract
@@ -50,7 +50,7 @@ contracts from git, s3, http, local, and mercurial by adding the following to an
 
 ```
 accord "test-accord" {
-  source = "github.com/datascienceinc/accord//examples/test.hcl"
+  source = "github.com/ChrisMcKenzie/accord//examples/test.hcl"
 }
 ```
 

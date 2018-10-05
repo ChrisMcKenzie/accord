@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	accord "github.com/datascienceinc/accord/pkg"
+	accord "github.com/ChrisMcKenzie/accord/pkg"
 )
 
 // Client that tests that the expected response is given

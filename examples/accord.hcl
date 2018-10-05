@@ -1,5 +1,5 @@
 accord "test-accord" {
-  source = "github.com/datascienceinc/accord//examples/test.hcl"
+  source = "github.com/ChrisMcKenzie/accord//examples/test.hcl"
 }
 
 

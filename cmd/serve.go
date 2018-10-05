@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	accord "github.com/datascienceinc/accord/pkg"
+	accord "github.com/ChrisMcKenzie/accord/pkg"
 	"github.com/fatih/color"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"

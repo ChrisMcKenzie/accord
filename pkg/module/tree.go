@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	accord "github.com/datascienceinc/accord/pkg"
+	accord "github.com/ChrisMcKenzie/accord/pkg"
 	getter "github.com/hashicorp/go-getter"
 )
 

@@ -1,6 +1,6 @@
 package main
 
-import "github.com/datascienceinc/accord/cmd"
+import "github.com/ChrisMcKenzie/accord/cmd"
 
 func main() {
 	cmd.Execute()

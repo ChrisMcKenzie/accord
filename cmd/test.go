@@ -9,8 +9,8 @@ import (
 	"net/url"
 	"strings"
 
-	accord "github.com/datascienceinc/accord/pkg"
-	"github.com/datascienceinc/accord/pkg/httptest"
+	accord "github.com/ChrisMcKenzie/accord/pkg"
+	"github.com/ChrisMcKenzie/accord/pkg/httptest"
 	"github.com/fatih/color"
 	"github.com/pmezard/go-difflib/difflib"
 	"github.com/spf13/cobra"

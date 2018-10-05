@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	accord "github.com/datascienceinc/accord/pkg"
+	accord "github.com/ChrisMcKenzie/accord/pkg"
 )
 
 func httpHandler(method string, res *accord.Response, t *testing.T) http.HandlerFunc {

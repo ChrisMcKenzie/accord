@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/datascienceinc/accord/pkg/module"
+	"github.com/ChrisMcKenzie/accord/pkg/module"
 	getter "github.com/hashicorp/go-getter"
 	"github.com/spf13/cobra"
 )

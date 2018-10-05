@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	accord "github.com/datascienceinc/accord/pkg"
-	"github.com/datascienceinc/accord/pkg/module"
+	accord "github.com/ChrisMcKenzie/accord/pkg"
+	"github.com/ChrisMcKenzie/accord/pkg/module"
 )
 
 // Context is the struct that will contain all data for the process.

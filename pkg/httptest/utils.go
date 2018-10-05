@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	accord "github.com/datascienceinc/accord/pkg"
+	accord "github.com/ChrisMcKenzie/accord/pkg"
 	"github.com/fatih/color"
 	"github.com/pmezard/go-difflib/difflib"
 )
