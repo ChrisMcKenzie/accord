@@ -53,46 +53,58 @@ func TestHttpClient(t *testing.T) {
 		expected *accord.Response
 	}{
 		{
-			name:     "Basic Request",
-			errNil:   true,
-			method:   "GET",
-			url:      "/test",
-			request:  &accord.Request{},
-			response: &accord.Response{},
-			expected: &accord.Response{},
+			name:    "Basic Request",
+			errNil:  true,
+			method:  "GET",
+			url:     "/test",
+			request: &accord.Request{},
+			response: &accord.Response{
+				Code: 200,
+			},
+			expected: &accord.Response{
+				Code: 200,
+			},
 		},
 		{
-			name:     "Failing Status Code request",
-			errNil:   false,
-			method:   "GET",
-			url:      "/test",
-			request:  &accord.Request{},
-			response: &accord.Response{},
+			name:    "Failing Status Code request",
+			errNil:  false,
+			method:  "GET",
+			url:     "/test",
+			request: &accord.Request{},
+			response: &accord.Response{
+				Code: 200,
+			},
 			expected: &accord.Response{
 				Code: 400,
 			},
 		},
 		{
-			name:     "Failing Header request",
-			errNil:   false,
-			method:   "GET",
-			url:      "/test",
-			request:  &accord.Request{},
-			response: &accord.Response{},
+			name:    "Failing Header request",
+			errNil:  false,
+			method:  "GET",
+			url:     "/test",
+			request: &accord.Request{},
+			response: &accord.Response{
+				Code: 200,
+			},
 			expected: &accord.Response{
+				Code: 200,
 				Headers: http.Header(map[string][]string{
 					"X-My-Header": []string{"test"},
 				}),
 			},
 		},
 		{
-			name:     "Failing Body request",
-			errNil:   false,
-			method:   "GET",
-			url:      "/test",
-			request:  &accord.Request{},
-			response: &accord.Response{},
+			name:    "Failing Body request",
+			errNil:  false,
+			method:  "GET",
+			url:     "/test",
+			request: &accord.Request{},
+			response: &accord.Response{
+				Code: 200,
+			},
 			expected: &accord.Response{
+				Code: 200,
 				Body: "test",
 			},
 		},
@@ -103,6 +115,7 @@ func TestHttpClient(t *testing.T) {
 			url:     "/test",
 			request: &accord.Request{},
 			response: &accord.Response{
+				Code: 200,
 				Headers: http.Header(map[string][]string{
 					"Content-Type": []string{"application/json"},
 				}),
@@ -111,6 +124,7 @@ func TestHttpClient(t *testing.T) {
 				},
 			},
 			expected: &accord.Response{
+				Code: 200,
 				Headers: http.Header(map[string][]string{
 					"Content-Type": []string{"application/json"},
 				}),
