@@ -58,7 +58,8 @@ func newHandler(ep *accord.Endpoint) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(ep.Response.Code)
 
-		resp := parseBody(ep.Response.Headers, ep.Response.Body)
+		parser := Parser{Headers: ep.Response.Headers, Body: ep.Response.Body}
+		resp, _ := parser.Parse()
 		w.Write(resp.Bytes())
 	})
 }

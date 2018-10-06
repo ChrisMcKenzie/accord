@@ -2,12 +2,12 @@ package httptest
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"strings"
 
+	"github.com/ChrisMcKenzie/accord/cmd"
 	accord "github.com/ChrisMcKenzie/accord/pkg"
 	"github.com/fatih/color"
 	"github.com/pmezard/go-difflib/difflib"
@@ -35,7 +35,8 @@ func compareResponse(resp *http.Response, expect *accord.Response) error {
 		return err
 	}
 
-	respBody := parseBody(expect.Headers, expect.Body)
+	parser := cmd.Parser{Headers: expect.Headers, Body: expect.Body}
+	respBody, _ := parser.Parse()
 	if body.String() != respBody.String() {
 		diff := difflib.ContextDiff{
 			A:        difflib.SplitLines(body.String()),
@@ -50,21 +51,4 @@ func compareResponse(resp *http.Response, expect *accord.Response) error {
 	}
 
 	return nil
-}
-
-func parseBody(h http.Header, i interface{}) bytes.Buffer {
-	var buf bytes.Buffer
-	if i == nil {
-		i = ""
-	}
-
-	if _, ok := i.(string); h.Get("Content-Type") == "application/json" || !ok {
-		enc := json.NewEncoder(&buf)
-		enc.SetIndent("", "\t")
-		enc.Encode(i)
-	} else {
-		buf.WriteString(i.(string))
-	}
-
-	return buf
 }
