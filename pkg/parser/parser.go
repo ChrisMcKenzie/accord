@@ -1,13 +1,22 @@
-package cmd
+package parser
 
 import (
+	"bytes"
 	"encoding/json"
 	"encoding/xml"
 	"net/http"
 )
 
+type ByteBufferReadCloser struct {
+	bytes.Buffer
+}
+
+func (b *ByteBufferReadCloser) Close() error {
+	return nil
+}
+
 type BodyParser interface {
-	Parse() (byteBufferReadCloser, error)
+	Parse() (ByteBufferReadCloser, error)
 }
 
 type Parser struct {
@@ -15,8 +24,8 @@ type Parser struct {
 	Body    interface{}
 }
 
-func (parser Parser) Parse() (byteBufferReadCloser, error) {
-	var buf byteBufferReadCloser
+func (parser Parser) Parse() (ByteBufferReadCloser, error) {
+	var buf ByteBufferReadCloser
 	if parser.Body == nil {
 		parser.Body = ""
 	}
@@ -26,13 +35,13 @@ func (parser Parser) Parse() (byteBufferReadCloser, error) {
 		enc.SetIndent("", "\t")
 		err := enc.Encode(parser.Body)
 		if err != nil {
-			return byteBufferReadCloser{}, err
+			return ByteBufferReadCloser{}, err
 		}
 	case "application/xml":
 		enc := xml.NewEncoder(&buf)
 		err := enc.Encode(parser.Body)
 		if err != nil {
-			return byteBufferReadCloser{}, err
+			return ByteBufferReadCloser{}, err
 		}
 	default:
 		buf.WriteString(parser.Body.(string))

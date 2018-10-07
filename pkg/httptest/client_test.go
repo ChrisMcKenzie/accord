@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ChrisMcKenzie/accord/cmd"
 	accord "github.com/ChrisMcKenzie/accord/pkg"
+	"github.com/ChrisMcKenzie/accord/pkg/parser"
 )
 
 func httpHandler(method string, res *accord.Response, t *testing.T) http.HandlerFunc {
@@ -24,7 +24,7 @@ func httpHandler(method string, res *accord.Response, t *testing.T) http.Handler
 
 		w.WriteHeader(res.Code)
 
-		parser := cmd.Parser{Headers: res.Headers, Body: res.Body}
+		parser := parser.Parser{Headers: res.Headers, Body: res.Body}
 		resp, _ := parser.Parse()
 		w.Write(resp.Bytes())
 	}
@@ -33,7 +33,7 @@ func httpHandler(method string, res *accord.Response, t *testing.T) http.Handler
 func newRequest(method, url string, req *accord.Request) (*http.Request, error) {
 	var buf bytes.Buffer
 	if req != nil {
-		parser := cmd.Parser{Headers: req.Headers, Body: req.Body}
+		parser := parser.Parser{Headers: req.Headers, Body: req.Body}
 		resp, _ := parser.Parse()
 		buf = resp.Buffer
 	}

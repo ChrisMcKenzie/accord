@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ChrisMcKenzie/accord/cmd"
 	accord "github.com/ChrisMcKenzie/accord/pkg"
+	"github.com/ChrisMcKenzie/accord/pkg/parser"
 	"github.com/fatih/color"
 	"github.com/pmezard/go-difflib/difflib"
 )
@@ -35,7 +35,7 @@ func compareResponse(resp *http.Response, expect *accord.Response) error {
 		return err
 	}
 
-	parser := cmd.Parser{Headers: expect.Headers, Body: expect.Body}
+	parser := parser.Parser{Headers: expect.Headers, Body: expect.Body}
 	respBody, _ := parser.Parse()
 	if body.String() != respBody.String() {
 		diff := difflib.ContextDiff{
