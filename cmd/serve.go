@@ -6,6 +6,7 @@ import (
 	"time"
 
 	accord "github.com/ChrisMcKenzie/accord/pkg"
+	"github.com/ChrisMcKenzie/accord/pkg/parser"
 	"github.com/fatih/color"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
@@ -58,7 +59,8 @@ func newHandler(ep *accord.Endpoint) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(ep.Response.Code)
 
-		resp := parseBody(ep.Response.Headers, ep.Response.Body)
+		parser := parser.Parser{Headers: ep.Response.Headers, Body: ep.Response.Body}
+		resp, _ := parser.Parse()
 		w.Write(resp.Bytes())
 	})
 }

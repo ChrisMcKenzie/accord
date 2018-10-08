@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	accord "github.com/ChrisMcKenzie/accord/pkg"
+	"github.com/ChrisMcKenzie/accord/pkg/parser"
 )
 
 func httpHandler(method string, res *accord.Response, t *testing.T) http.HandlerFunc {
@@ -23,7 +24,8 @@ func httpHandler(method string, res *accord.Response, t *testing.T) http.Handler
 
 		w.WriteHeader(res.Code)
 
-		resp := parseBody(res.Headers, res.Body)
+		parser := parser.Parser{Headers: res.Headers, Body: res.Body}
+		resp, _ := parser.Parse()
 		w.Write(resp.Bytes())
 	}
 }
@@ -31,7 +33,9 @@ func httpHandler(method string, res *accord.Response, t *testing.T) http.Handler
 func newRequest(method, url string, req *accord.Request) (*http.Request, error) {
 	var buf bytes.Buffer
 	if req != nil {
-		buf = parseBody(req.Headers, req.Body)
+		parser := parser.Parser{Headers: req.Headers, Body: req.Body}
+		resp, _ := parser.Parse()
+		buf = resp.Buffer
 	}
 
 	r, err := http.NewRequest(method, url, &buf)
